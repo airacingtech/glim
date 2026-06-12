@@ -34,9 +34,9 @@
     "between_registration_type": "GICP",
     // Registration error factors
     "registration_error_factor_type": "VGICP_GPU",
-    "randomsampling_rate": 1.0,
-    "submap_voxel_resolution": 0.5,
-    "submap_voxel_resolution_max": 1.0,
+    "randomsampling_rate": 0.5,
+    "submap_voxel_resolution": 1.0,
+    "submap_voxel_resolution_max": 2.0,
     "submap_voxel_resolution_dmin": 5.0,
     "submap_voxel_resolution_dmax": 20.0,
     "submap_voxelmap_levels": 2,

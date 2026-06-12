@@ -16,7 +16,7 @@
     "use_isam2_dogleg": false,
     "isam2_relinearize_skip": 1,
     "isam2_relinearize_thresh": 0.1,
-    "fix_imu_bias": false,
+    "fix_imu_bias": true,
     // Registration settings
     "registration_type": "GICP",
     "max_iterations": 8,

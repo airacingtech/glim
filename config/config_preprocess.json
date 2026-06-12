@@ -18,7 +18,7 @@
   */
   "preprocess": {
     "distance_near_thresh": 0.5,
-    "distance_far_thresh": 100.0,
+    "distance_far_thresh": 200.0,
     "use_random_grid_downsampling": true,
     "downsample_resolution": 1.0,
     "random_downsample_target": 10000,
@@ -31,6 +31,6 @@
     "crop_bbox_min": [-1.0, -1.0, -1.0],
     "crop_bbox_max": [1.0, 1.0, 1.0],
     "k_correspondences": 10,
-    "num_threads": 2
+    "num_threads": 8
   }
 }
