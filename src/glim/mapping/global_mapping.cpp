@@ -67,6 +67,7 @@ GlobalMappingParams::GlobalMappingParams() {
   randomsampling_rate = config.param<double>("global_mapping", "randomsampling_rate", 1.0);
   max_implicit_loop_distance = config.param<double>("global_mapping", "max_implicit_loop_distance", 100.0);
   min_implicit_loop_overlap = config.param<double>("global_mapping", "min_implicit_loop_overlap", 0.1);
+  max_full_submaps = config.param<int>("global_mapping", "max_full_submaps", -1);
 
   enable_gpu = registration_error_factor_type.find("GPU") != std::string::npos;
 
@@ -160,7 +161,9 @@ void GlobalMapping::insert_submap(const SubMap::Ptr& submap) {
 
   if (current == 0) {
     new_factors->emplace_shared<gtsam_points::LinearDampingFactor>(X(0), 6, params.init_pose_damping_scale);
-  } else {
+  } else if (params.enable_optimization) {
+    // Inter-submap factors only matter when the graph is actually optimized;
+    // without optimization they would only burn GPU memory and compute.
     new_factors->add(*create_between_factors(current));
     new_factors->add(*create_matching_cost_factors(current));
   }
@@ -249,11 +252,11 @@ void GlobalMapping::insert_submap(int current, const SubMap::Ptr& submap) {
   }
 
 #ifdef GTSAM_POINTS_USE_CUDA
-  if (params.enable_gpu && !submap->frame->points_gpu) {
+  if (params.enable_gpu && params.enable_optimization && !submap->frame->points_gpu) {
     submap->frame = gtsam_points::PointCloudGPU::clone(*submap->frame);
   }
 
-  if (params.enable_gpu) {
+  if (params.enable_gpu && params.enable_optimization) {
     if (params.randomsampling_rate > 0.99) {
       subsampled_submap = submap->frame;
     } else {
@@ -269,7 +272,9 @@ void GlobalMapping::insert_submap(int current, const SubMap::Ptr& submap) {
   }
 #endif
 
-  if (submap->voxelmaps.empty()) {
+  // Voxelmaps exist solely for inter-submap matching factors — skip them
+  // entirely when the graph is not optimized (pure odometry-backbone mode).
+  if (submap->voxelmaps.empty() && params.enable_optimization) {
     for (int i = 0; i < params.submap_voxelmap_levels; i++) {
       const double resolution = base_resolution * std::pow(params.submap_voxelmap_scaling_factor, i);
       auto voxelmap = std::make_shared<gtsam_points::GaussianVoxelMapCPU>(resolution);
@@ -280,6 +285,19 @@ void GlobalMapping::insert_submap(int current, const SubMap::Ptr& submap) {
 
   submaps.push_back(submap);
   subsampled_submaps.push_back(subsampled_submap);
+
+  // Bounded-memory mode (opt-off only): a submap that has slid `max_full_submaps`
+  // behind the newest has already been emitted via on_insert_submap (e.g. into the
+  // voxel_map_accumulator), so it no longer needs full density in RAM. Downsample
+  // it to a sparse cloud so back-end retention stops growing with distance driven.
+  if (params.max_full_submaps > 0 && !params.enable_optimization) {
+    const int idx = static_cast<int>(submaps.size()) - 1 - params.max_full_submaps;
+    if (idx >= 0 && submaps[idx]->frame && submaps[idx]->frame->size() > 2000) {
+      const double rate = 2000.0 / submaps[idx]->frame->size();
+      submaps[idx]->frame = gtsam_points::random_sampling(submaps[idx]->frame, rate, mt);
+      subsampled_submaps[idx] = submaps[idx]->frame;
+    }
+  }
 }
 
 void GlobalMapping::find_overlapping_submaps(double min_overlap) {

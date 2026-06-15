@@ -66,6 +66,7 @@ add_library(glim SHARED
   src/glim/util/data_validator.cpp
   src/glim/util/serialization.cpp
   src/glim/util/debug.cpp
+  src/glim/util/ins_prior_buffer.cpp
   # preprocess
   src/glim/preprocess/callbacks.cpp
   src/glim/preprocess/cloud_preprocessor.cpp
@@ -82,6 +83,7 @@ add_library(glim SHARED
   src/glim/odometry/odometry_estimation_base.cpp
   src/glim/odometry/async_odometry_estimation.cpp
   src/glim/odometry/odometry_estimation_imu.cpp
+  src/glim/odometry/odometry_estimation_ins.cpp
   src/glim/odometry/odometry_estimation_ct.cpp
   src/glim/odometry/odometry_estimation_cpu.cpp
   # mapping
@@ -124,6 +126,7 @@ list(APPEND glim_LIBRARIES glim)
 list(APPEND module_srcs
   src/glim/odometry/odometry_estimation_ct_create.cpp
   src/glim/odometry/odometry_estimation_cpu_create.cpp
+  src/glim/odometry/odometry_estimation_ins_create.cpp
   src/glim/mapping/sub_mapping_create.cpp
   src/glim/mapping/sub_mapping_passthrough_create.cpp
   src/glim/mapping/global_mapping_create.cpp

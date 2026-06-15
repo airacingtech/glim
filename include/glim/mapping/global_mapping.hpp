@@ -47,6 +47,12 @@ public:
   double max_implicit_loop_distance;
   double min_implicit_loop_overlap;
 
+  // Bounded-memory mode (only when enable_optimization == false): once a submap
+  // has been consumed downstream (e.g., by the voxel_map_accumulator), submaps
+  // older than this many are downsampled so back-end RAM stops growing with
+  // distance driven. -1 disables (keep every submap at full density).
+  int max_full_submaps;
+
   bool use_isam2_dogleg;
   double isam2_relinearize_skip;
   double isam2_relinearize_thresh;

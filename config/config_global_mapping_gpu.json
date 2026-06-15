@@ -26,8 +26,15 @@
   "global_mapping": {
     "so_name": "libglobal_mapping.so",
     // General settings
-    "enable_imu": true,
-    "enable_optimization": true,
+    // (disabled for the INS-backbone front-end: frames carry no estimated IMU
+    //  state, and the INS already provides what IMU factors would — re-enable
+    //  if switching config_odometry back to the LiDAR-IMU estimator)
+    "enable_imu": false,
+    // Pure-backbone mode: submaps stay exactly at their INS poses — the
+    // measured lap-over-lap ground consistency of the raw data is 5-7 cm,
+    // so any graph optimization can only degrade it. Re-enable for
+    // experiments with GICP/loop-closure polish.
+    "enable_optimization": false,
     "init_pose_damping_scale": 1e10,
     // Relative pose factors
     "create_between_factors": false,
@@ -35,14 +42,18 @@
     // Registration error factors
     "registration_error_factor_type": "VGICP_GPU",
     "randomsampling_rate": 0.5,
-    "submap_voxel_resolution": 1.0,
-    "submap_voxel_resolution_max": 2.0,
+    "submap_voxel_resolution": 1.5,
+    "submap_voxel_resolution_max": 3.0,
     "submap_voxel_resolution_dmin": 5.0,
     "submap_voxel_resolution_dmax": 20.0,
     "submap_voxelmap_levels": 2,
     "submap_voxelmap_scaling_factor": 2.0,
     "max_implicit_loop_distance": 100.0,
     "min_implicit_loop_overlap": 0.2,
+    // Bounded-memory mode (opt-off): keep only this many recent submaps at full
+    // density; older ones are downsampled once captured by voxel_map_accumulator.
+    // The accumulator holds the full (area-bounded) map, so RAM stays flat over laps.
+    "max_full_submaps": 30,
     // Optimizer settings
     "use_isam2_dogleg": false,
     "isam2_relinearize_skip": 1,

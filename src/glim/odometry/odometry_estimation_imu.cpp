@@ -3,7 +3,9 @@
 #include <spdlog/spdlog.h>
 
 #include <gtsam/inference/Symbol.h>
+#include <gtsam/geometry/Pose3.h>
 #include <gtsam/slam/BetweenFactor.h>
+#include <gtsam/nonlinear/PriorFactor.h>
 #include <gtsam/nonlinear/LinearContainerFactor.h>
 
 #include <gtsam_points/types/point_cloud_cpu.hpp>

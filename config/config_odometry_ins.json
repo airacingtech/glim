@@ -1,0 +1,19 @@
+{
+  /*** Direct-georeferencing (RTK GNSS/INS) odometry backbone ***
+  // The INS pose IS the trajectory: each scan is deskewed with interpolated INS
+  // poses and placed at the INS pose. No scan matching, no front-end optimization.
+  // The world frame equals the local ENU frame of the INS topic. INS samples are
+  // fed by the INS extension module (libins.so) into the process-wide buffer.
+  //
+  // so_name      : selects this backbone (set "config_odometry" to this file in config.json)
+  // deskew_dt    : INS pose sampling interval for per-scan deskewing [s]
+  // window_size  : number of frames kept in the front-end window before marginalization
+  // num_threads  : threads for per-point covariance/normal estimation
+  */
+  "odometry_estimation": {
+    "so_name": "libodometry_estimation_ins.so",
+    "deskew_dt": 0.005,
+    "window_size": 3,
+    "num_threads": 8
+  }
+}

@@ -51,19 +51,19 @@
     // LiDAR config
     "global_shutter_lidar": false,
     "T_lidar_imu": [
-      -0.324,
-      0.022,
-      0.002,
-      -0.018479,
-      -0.009514,
-      -0.000122,
-      0.999784
+      -0.95065,
+      -0.005,
+      0.47194,
+      0.0,
+      0.0,
+      0.0,
+      1.0
     ],
     "intensity_field": "reflectance",
     "ring_field": "",
     // LiDAR per-point time settings
     "autoconf_perpoint_times": true,
-    "autoconf_prefer_frame_time": false,
+    "autoconf_prefer_frame_time": true,
     "perpoint_relative_time": true,
     "perpoint_time_scale": 1.0,
     // Camera config (required for only extension modules)

@@ -19,7 +19,7 @@
     "max_implicit_loop_distance": 100.0,
     "min_implicit_loop_overlap": 0.2,
     // Optimizer settings
-    "use_isam2_dogleg": false,
+    "use_isam2_dogleg": true,
     "isam2_relinearize_skip": 1,
     "isam2_relinearize_thresh": 0.1
   }
