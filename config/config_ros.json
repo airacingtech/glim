@@ -63,11 +63,7 @@
     "tf_time_offset": 1e-6,
     // Extension modules
     "extension_modules": [
-      "libstandard_viewer.so",
-      "libimu_validator.so",
-      "libgnss_global.so",
       "libins.so",
-      "libscan_context_loop_detector.so",
       "libvoxel_map_accumulator.so"
     ],
     // Topics

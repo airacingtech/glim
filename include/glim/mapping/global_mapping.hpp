@@ -32,6 +32,11 @@ public:
   bool enable_gpu;
   bool enable_imu;
   bool enable_optimization;
+  // When false (with enable_optimization true), skip the continuous submap-to-submap
+  // VGICP registration factors — keep only externally-supplied factors (e.g. scan_context
+  // loop closures) + priors. Lets loop closure run without LiDAR re-aligning every submap
+  // off an already-accurate (RTK) trajectory.
+  bool enable_matching_cost_factors;
   bool enable_between_factors;
   std::string between_registration_type;
 

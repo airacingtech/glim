@@ -27,13 +27,13 @@
     "max_num_keyframes": 100,
     "max_num_voxels": -1,
     "adaptive_max_num_voxels": -1,
-    // Submap creation params
-    // Dense map for online GICP localization: pure-backbone mode keeps the
-    // back-end off the GPU, so submap density is bounded only by RAM/disk.
-    // 0.15 m voxels x ~150k pts/submap ~= 6x denser than the 25k VRAM-era cap.
-    "submap_voxel_resolution": 0.15,
-    "min_dist_in_voxel": 0.1,
-    "max_num_points_in_voxel": 100,
+    // Submap creation params — DENSE settings (the real density lever; submap
+    // voxel was the bottleneck feeding the 0.05 m accumulator). With optimization
+    // OFF no GPU voxelmaps are built, so this is RAM-only and the box has ~18 GB
+    // free. 0.08 m voxels x up to 150k pts feeds a ~0.06-0.08 m dense final map.
+    "submap_voxel_resolution": 0.08,
+    "min_dist_in_voxel": 0.04,
+    "max_num_points_in_voxel": 200,
     "submap_target_num_points": 150000
   }
 }

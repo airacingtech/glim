@@ -30,11 +30,13 @@
     //  state, and the INS already provides what IMU factors would — re-enable
     //  if switching config_odometry back to the LiDAR-IMU estimator)
     "enable_imu": false,
-    // Pure-backbone mode: submaps stay exactly at their INS poses — the
-    // measured lap-over-lap ground consistency of the raw data is 5-7 cm,
-    // so any graph optimization can only degrade it. Re-enable for
-    // experiments with GICP/loop-closure polish.
+    // Pure-RTK backbone: optimization OFF. scan_context loop closure can't be bounded
+    // in RAM (it needs every submap resident; submaps pile up per lap -> OOM), and a
+    // drift-free RTK map has no drift for loops to correct. So submaps stay at their RTK
+    // poses, the max_full_submaps eviction bounds RAM, and the voxel_map_accumulator
+    // builds the (persistent, multi-session) map. This is the lean, no-OOM setup.
     "enable_optimization": false,
+    "enable_matching_cost_factors": false,
     "init_pose_damping_scale": 1e10,
     // Relative pose factors
     "create_between_factors": false,

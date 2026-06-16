@@ -18,17 +18,20 @@
   */
   "preprocess": {
     "distance_near_thresh": 0.1,
-    "distance_far_thresh": 100.0,
+    "distance_far_thresh": 150.0,
     "use_random_grid_downsampling": false,
     // Dense-map settings: with the INS backbone there is no scan matching in
     // the front-end, so per-scan point count only costs CPU (covariance
-    // estimation) — keep ~half of each 97k merged scan instead of 10%.
-    "downsample_resolution": 0.15,
+    // estimation). 0.06 m feeds the dense 0.08 m submaps -> dense 0.05 m map.
+    "downsample_resolution": 0.06,
     "random_downsample_target": 50000,
     "random_downsample_rate": 0.1,
-    "enable_outlier_removal": false,
+    // Statistical outlier removal: drops isolated floaters/ghost returns.
+    // std_mul 2.0 (gentle) so it does not eat sparse thin features (fence wires,
+    // distant poles) — lower toward 1.0 only if stray points persist.
+    "enable_outlier_removal": true,
     "outlier_removal_k": 10,
-    "outlier_std_mul_factor": 1.0,
+    "outlier_std_mul_factor": 2.0,
     "enable_cropbox_filter": false,
     "crop_bbox_frame": "lidar",
     "crop_bbox_min": [-1.0, -1.0, -1.0],

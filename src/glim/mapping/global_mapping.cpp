@@ -52,6 +52,7 @@ GlobalMappingParams::GlobalMappingParams() {
 
   enable_imu = config.param<bool>("global_mapping", "enable_imu", true);
   enable_optimization = config.param<bool>("global_mapping", "enable_optimization", true);
+  enable_matching_cost_factors = config.param<bool>("global_mapping", "enable_matching_cost_factors", true);
 
   enable_between_factors = config.param<bool>("global_mapping", "create_between_factors", false);
   between_registration_type = config.param<std::string>("global_mapping", "between_registration_type", "GICP");
@@ -165,7 +166,9 @@ void GlobalMapping::insert_submap(const SubMap::Ptr& submap) {
     // Inter-submap factors only matter when the graph is actually optimized;
     // without optimization they would only burn GPU memory and compute.
     new_factors->add(*create_between_factors(current));
-    new_factors->add(*create_matching_cost_factors(current));
+    if (params.enable_matching_cost_factors) {
+      new_factors->add(*create_matching_cost_factors(current));
+    }
   }
 
   if (params.enable_imu) {
@@ -251,12 +254,18 @@ void GlobalMapping::insert_submap(int current, const SubMap::Ptr& submap) {
     subsampled_submap = gtsam_points::random_sampling(submap->frame, params.randomsampling_rate, mt);
   }
 
+  // Per-submap voxelmaps exist solely for inter-submap VGICP matching factors.
+  // Skip them when the graph isn't optimized (pure backbone) OR when matching-cost
+  // factors are disabled (loop-closure-only mode: scan_context uses submap frames +
+  // BetweenFactors, not voxelmaps). This is the dominant opt-on memory saving.
+  const bool need_voxelmaps = params.enable_optimization && params.enable_matching_cost_factors;
+
 #ifdef GTSAM_POINTS_USE_CUDA
-  if (params.enable_gpu && params.enable_optimization && !submap->frame->points_gpu) {
+  if (params.enable_gpu && need_voxelmaps && !submap->frame->points_gpu) {
     submap->frame = gtsam_points::PointCloudGPU::clone(*submap->frame);
   }
 
-  if (params.enable_gpu && params.enable_optimization) {
+  if (params.enable_gpu && need_voxelmaps) {
     if (params.randomsampling_rate > 0.99) {
       subsampled_submap = submap->frame;
     } else {
@@ -272,9 +281,7 @@ void GlobalMapping::insert_submap(int current, const SubMap::Ptr& submap) {
   }
 #endif
 
-  // Voxelmaps exist solely for inter-submap matching factors — skip them
-  // entirely when the graph is not optimized (pure odometry-backbone mode).
-  if (submap->voxelmaps.empty() && params.enable_optimization) {
+  if (submap->voxelmaps.empty() && need_voxelmaps) {
     for (int i = 0; i < params.submap_voxelmap_levels; i++) {
       const double resolution = base_resolution * std::pow(params.submap_voxelmap_scaling_factor, i);
       auto voxelmap = std::make_shared<gtsam_points::GaussianVoxelMapCPU>(resolution);

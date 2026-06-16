@@ -51,13 +51,13 @@
     // LiDAR config
     "global_shutter_lidar": false,
     "T_lidar_imu": [
-      -0.95065,
-      -0.005,
-      0.47194,
-      0.0,
-      0.0,
-      0.0,
-      1.0
+      -0.324,
+      0.022,
+      0.002,
+      -0.018479,
+      -0.009514,
+      -0.000122,
+      0.999784
     ],
     "intensity_field": "reflectance",
     "ring_field": "",
