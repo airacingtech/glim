@@ -58,12 +58,16 @@ private:
   std::atomic_bool kill_switch;
   std::thread thread;
 
+  bool enable_backface_culling;
+  Eigen::Vector2f backface_culling_range;
+
   bool enable_partial_rendering;
   int partial_rendering_budget;
 
   bool track;
   bool show_current_coord;
   bool show_current_points;
+  int camera_mode;
   int odom_color_mode;
   int submap_color_mode;
 

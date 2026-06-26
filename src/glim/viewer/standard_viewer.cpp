@@ -49,6 +49,7 @@ StandardViewer::StandardViewer() : logger(create_module_logger("viewer")) {
   track = true;
   show_current_coord = true;
   show_current_points = true;
+  camera_mode = 0;
   odom_color_mode = 0;
   submap_color_mode = 0;
 
@@ -91,6 +92,9 @@ StandardViewer::StandardViewer() : logger(create_module_logger("viewer")) {
   point_shape_circle = config.param("standard_viewer", "point_shape_circle", true);
 
   trajectory.reset(new TrajectoryManager);
+
+  enable_backface_culling = false;
+  backface_culling_range = Eigen::Vector2f(0.0f, 1.1f);
 
   enable_partial_rendering = config.param("standard_viewer", "enable_partial_rendering", false);
   partial_rendering_budget = config.param("standard_viewer", "partial_rendering_budget", 1024);

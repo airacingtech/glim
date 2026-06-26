@@ -81,6 +81,10 @@ void StandardViewer::set_callbacks() {
       auto viewer = guik::LightViewer::instance();
       auto cloud_buffer = std::make_shared<glk::PointCloudBuffer>(new_frame->frame->points, new_frame->frame->size());
 
+      if (new_frame->frame->has_normals()) {
+        cloud_buffer->add_normals(new_frame->frame->normals, new_frame->frame->size());
+      }
+
       std::vector<float> intensities;
       if (new_frame->raw_frame && new_frame->raw_frame->points.size() == new_frame->frame->size()) {
         intensities.resize(new_frame->raw_frame->intensities.size());
@@ -118,7 +122,7 @@ void StandardViewer::set_callbacks() {
       const Eigen::Isometry3f pose = resolve_pose(new_frame);
 
       if (track) {
-        viewer->lookat(pose.translation());
+        viewer->lookat(pose);
       }
 
       guik::ShaderSetting shader_setting = guik::FlatColor(1.0f, 0.5f, 0.0f, 1.0f, pose);
@@ -485,6 +489,9 @@ void StandardViewer::set_callbacks() {
 
       auto viewer = guik::LightViewer::instance();
       auto cloud_buffer = std::make_shared<glk::PointCloudBuffer>(submap->frame->points, submap->frame->size());
+      if (submap->frame->has_normals()) {
+        cloud_buffer->add_normals(submap->frame->normals, submap->frame->size());
+      }
       if (submap->frame->has_intensities()) {
         std::vector<float> intensities(submap->frame->intensities, submap->frame->intensities + submap->frame->size());
         cloud_buffer->add_colormap(intensities);
